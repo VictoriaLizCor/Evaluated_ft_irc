@@ -1,89 +1,210 @@
-#  42 Wolfsburg ft_irc
-Internet Relay Chat or IRC is a text-based communication protocol on the Internet.
-It offers real-time messaging that can be either public or private. Users can exchange
-direct messages and join group channels.
-IRC clients connect to IRC servers in order to join channels. IRC servers are connected
-together to form a network.
+# 42 Wolfsburg — ft_irc (IRC Server)
 
-## Getting Started
+Internet Relay Chat (IRC) is a text-based communication protocol that enables real-time messaging in public channels or private messages.  
+This project is a **42 School `ft_irc`** implementation: an IRC server written in **C++98**.
 
-To get started with the project, follow these steps:
+---
 
-1. **Clone the repository**:
-	```bash
-	git clone https://github.com/yourusername/ft_irc.git
-	cd ft_irc
-	```
+## Table of Contents
 
-2. **Build the project**:
-	```bash
-	make
-	```
+- [Features](#features)
+- [Requirements](#requirements)
+- [Build](#build)
+- [Run](#run)
+- [Connect to the Server](#connect-to-the-server)
+  - [Using netcat (`nc`)](#using-netcat-nc)
+  - [Using HexChat](#using-hexchat)
+- [Supported Commands](#supported-commands)
+- [Docker](#docker)
+- [Testing](#testing)
+- [Troubleshooting](#troubleshooting)
+- [Project Structure](#project-structure)
+- [Collaborators](#collaborators)
 
-3. **Run the server**:
-	```bash
-	./ircserver <port> <password>
-	or
-	make server
-	```
+---
 
-Make sure you have all the necessary dependencies installed before building the project.
+## Features
 
-## Connecting to the Server
+- IRC server executable: **`ircserv`**
+- Connect via terminal (`nc`) or IRC clients (e.g., **HexChat**)
+- Basic IRC workflow: authenticate, set nick/user, join channels, chat, manage channels, etc.
 
-To connect to the server, you can use either the terminal with `nc` or a graphical IRC client like HexChat.
+> Note: If you want, you can expand this section with any project-specific features (modes supported, operator features, bot, limits, etc.).
 
-### Using Terminal with `nc`
+---
 
-1. Open a new terminal window.
-2. Run the following command to connect to the server:
-	```bash
-	nc -C localhost 6667
-	PASS <password>
-	NICK <nickname>
-	USER <username> 0 * <realname>
-	```
-3. You should now be connected to the IRC server.
+## Requirements
+
+- **C++ compiler** supporting C++98 (project Makefile uses `c++` / `g++`)
+- **make**
+- (Optional) `nc` (netcat) for terminal testing
+- (Optional) **HexChat** for GUI client testing
+- (Optional) Docker / Docker Compose (if you want to use containers)
+
+---
+
+## Build
+
+```bash
+make
+```
+
+This generates the executable:
+
+- `./ircserv`
+
+Useful clean targets:
+
+```bash
+make clean
+make fclean
+make re
+```
+
+---
+
+## Run
+
+### Run with explicit arguments
+
+```bash
+./ircserv <port> <password>
+```
+
+Example:
+
+```bash
+./ircserv 6667 42
+```
+
+### Run using Makefile helper
+
+The Makefile provides a `server` target that runs the server on `6667` with password `42` by default:
+
+```bash
+make server
+```
+
+---
+
+## Connect to the Server
+
+### Using netcat (`nc`)
+
+1. Start the server (see [Run](#run))
+2. In another terminal:
+
+```bash
+nc -C localhost 6667
+PASS <password>
+NICK <nickname>
+USER <username> 0 * <realname>
+```
+
+After that you can `JOIN #channel` and use `PRIVMSG`.
 
 ### Using HexChat
 
-1. Download and install HexChat from [here](https://hexchat.github.io/downloads.html).
-2. Open HexChat and click on "Add" to create a new network.
-3. Name the network (e.g., `ft_irc`).
-4. Select the newly created network and click on "Edit".
-5. Add a new server with the address `localhost/6667`.
-6. Add PASS as method of authentication.
-7.  Click "Close" and then "Connect" to join the server.
+1. Install HexChat: https://hexchat.github.io/downloads.html
+2. Create a new network (e.g. `ft_irc`)
+3. Add server: `localhost/6667`
+4. Configure your server password (PASS) in HexChat
+5. Connect
 
-You should now be connected to the IRC server using HexChat.
+The Makefile also includes helper targets for HexChat/testing scripts (see [Testing](#testing)).
 
-## Available Commands
+---
 
-| Command          | Terminal Usage                          | HexChat Usage                          | Description                                      |
-|------------------|-----------------------------------------|----------------------------------------|--------------------------------------------------|
-| PASS             | `PASS <password>`                       | Entered on connection                  | Authenticate with server                         |
-| NICK             | `NICK <nickname>`                       | `/nick <nickname>`                     | Set or change your nickname                             |
-| USER             | `USER <username> 0 * <realname`         | Set on connection                      | Set username and realname                             |
-| JOIN             | `JOIN <channel>`                        | `/join <channel>`                      | Join a specified channel                         |
-| PRIVMSG          | `PRIVMSG <nickname/channel> <message>`  | `/msg <nickname/channel> <message>`    | Send a private message to a user or channel      |
-| PART             | `PART #<channel>`                        | `/part #<channel>`                      | Leave a specified channel                        |
-| QUIT             | `QUIT [message]`                        | `/quit [message]`                      | Disconnect from the server                        |
-| KICK             | `KICK #<channel> <nickname> [message]`  | `/kick #<channel> <nickname> [message]`     | Remove a user from a channel                     |
-| MODE             | `MODE #<channel> <<mode> [parameters]`    | `/mode #<channel> <mode> [parameters]`  | Change the mode of a channel             |
-| TOPIC            | `TOPIC #<channel> [new topic]`           | `/topic #<channel> [new topic]`         | Get or set the topic of a channel                |
-| WHO              | `WHO <nickname>`                        | `/who <nickname>`                      | List users in channel                     |
-| INVITE           | `INVITE <nickname> <channel>`           | `/invite <nickname> <channel>`         | Invite a user to a channel                       |
-| PING             | `PING <message>`                         | `/ping <message>`                       | Test the connection to the server                |
-| PONG             | `PONG <ping_message>`                         | `/pong <ping_message>`                       | Reply to a PING command                          |
+## Supported Commands
 
+| Command  | Terminal Usage                                | HexChat Usage                         | Description |
+|---------:|-----------------------------------------------|----------------------------------------|------------|
+| PASS     | `PASS <password>`                             | Entered on connection                  | Authenticate with server |
+| NICK     | `NICK <nickname>`                             | `/nick <nickname>`                     | Set or change nickname |
+| USER     | `USER <username> 0 * <realname>`              | Set on connection                      | Set username and realname |
+| JOIN     | `JOIN <channel>`                              | `/join <channel>`                      | Join a channel |
+| PRIVMSG  | `PRIVMSG <nickname/#channel> <message>`       | `/msg <nickname/#channel> <message>`   | Message user or channel |
+| PART     | `PART #<channel>`                             | `/part #<channel>`                     | Leave a channel |
+| QUIT     | `QUIT [message]`                              | `/quit [message]`                      | Disconnect |
+| KICK     | `KICK #<channel> <nickname> [message]`        | `/kick #<channel> <nickname> [message]`| Remove a user from a channel |
+| MODE     | `MODE #<channel> <mode> [parameters]`         | `/mode #<channel> <mode> [parameters]` | Change channel/user modes |
+| TOPIC    | `TOPIC #<channel> [new topic]`                | `/topic #<channel> [new topic]`        | Get/set channel topic |
+| WHO      | `WHO <nickname>`                              | `/who <nickname>`                      | Query users |
+| INVITE   | `INVITE <nickname> <channel>`                 | `/invite <nickname> <channel>`         | Invite a user |
+| PING     | `PING <message>`                              | `/ping <message>`                      | Connection test |
+| PONG     | `PONG <ping_message>`                         | `/pong <ping_message>`                 | Reply to server PING |
 
+---
+
+## Docker
+
+This repository contains a `Dockerfile` and `docker-compose.yml`.
+
+Typical usage (adjust to your compose/service names if needed):
+
+```bash
+docker compose up --build
+```
+
+If you want, tell me what your compose service is called and what ports it maps, and I’ll tighten this section to match exactly.
+
+---
+
+## Testing
+
+Your Makefile includes helpful targets:
+
+- Run server:  
+  ```bash
+  make server
+  ```
+
+- Run a netcat client:  
+  ```bash
+  make client
+  ```
+
+- Run test scripts:
+  ```bash
+  make test
+  ```
+
+There are additional debugging/memory targets (valgrind/helgrind/leaks) in the Makefile, but they may depend on platform/tool availability.
+
+---
+
+## Troubleshooting
+
+- **“Command not found” / not executable**  
+  Make sure you built the project (`make`) and run `./ircserv ...`.
+
+- **Port already in use (e.g. 6667)**  
+  The Makefile includes:
+  ```bash
+  make freePort
+  ```
+
+- **Can’t connect from client**  
+  Confirm the server is listening on the same port you connect to, and that you are sending `PASS`, `NICK`, `USER` in the expected order.
+
+---
+
+## Project Structure
+
+Common directories in this repository:
+
+- `src/` — implementation files
+- `include/` — headers
+- `testScripts/` — local testing utilities
+- `docs/` — documentation
+- `.settings/` — local dev tooling (hooks, colors, etc.)
+
+---
 
 ## Collaborators
 
-<!--| ---------------   | ------------------------------------------- | -->
-<!-- Should I include more info? -->
-|Name                         | GitHub Profile                          |
-|:---------------------------:|:-----------------------------:|
-| Vitoria Lizarraga [<a href="https://profile.intra.42.fr/users/lilizarr">@lilizarr</a>]  | <a href="https://github.com/VictoriaLizCor/">@VictoriaLizCor</a> |
-| Manuel Guillermo Cruz  [<a href="https://profile.intra.42.fr/users/mcruz-sa">@mcruz-sa</a>]  | <a href="https://github.com/MemoCSales/">@MemoCSales</a> |
-| Marian Sacaliuc [<a href="https://profile.intra.42.fr/users/msacaliu">@msacaliu</a>]  | <a href="https://github.com/Gaspar24/">@Gaspar24</a> |
+| Name | GitHub |
+|:--|:--|
+| Vitoria Lizarraga (42: `@lilizarr`) | `@VictoriaLizCor` |
+| Manuel Guillermo Cruz (42: `@mcruz-sa`) | `@MemoCSales` |
+| Marian Sacaliuc (42: `@msacaliu`) | `@Gaspar24` |
