@@ -29,7 +29,6 @@ This project is a **42 School `ft_irc`** implementation: an IRC server written i
 - Connect via terminal (`nc`) or IRC clients (e.g., **HexChat**)
 - Basic IRC workflow: authenticate, set nick/user, join channels, chat, manage channels, etc.
 
-> Note: If you want, you can expand this section with any project-specific features (modes supported, operator features, bot, limits, etc.).
 
 ---
 
@@ -145,8 +144,6 @@ Typical usage (adjust to your compose/service names if needed):
 ```bash
 docker compose up --build
 ```
-
-If you want, tell me what your compose service is called and what ports it maps, and I’ll tighten this section to match exactly.
 
 ---
 
